@@ -10,20 +10,20 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-/* serve public folder */
-app.use(express.static(path.join(__dirname, "public")));
+/* ✅ serve public folder (FIXED PATH) */
+app.use(express.static(path.join(__dirname, "../public")));
 
-/* root */
+/* ✅ root route */
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+  res.sendFile(path.join(__dirname, "../public", "index.html"));
 });
 
-/* groq */
+/* ✅ groq client */
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 });
 
-/* api */
+/* ✅ API route */
 app.post("/ask", async (req, res) => {
   try {
     const { question } = req.body;
@@ -35,8 +35,14 @@ app.post("/ask", async (req, res) => {
     const completion = await groq.chat.completions.create({
       model: "openai/gpt-oss-20b",
       messages: [
-        { role: "system", content: "You are a Data Structures and Algorithms tutor." },
-        { role: "user", content: question },
+        {
+          role: "system",
+          content: "You are a Data Structures and Algorithms tutor.",
+        },
+        {
+          role: "user",
+          content: question,
+        },
       ],
     });
 
@@ -45,16 +51,9 @@ app.post("/ask", async (req, res) => {
     });
   } catch (error) {
     console.error("Groq Error:", error);
-    res.json({ answer: "Groq API error ❌" });
+    res.status(500).json({ answer: "Groq API error ❌" });
   }
 });
 
-/* LOCAL + VERCEL SUPPORT */
-if (require.main === module) {
-  const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-  });
-}
-
+/* ✅ IMPORTANT: DO NOT listen on a port (Vercel handles this) */
 module.exports = app;
