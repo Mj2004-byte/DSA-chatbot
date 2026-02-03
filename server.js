@@ -6,27 +6,24 @@ require("dotenv").config();
 
 const app = express();
 
-/* 🔥 IMPORTANT: use env port for deployment */
-const PORT = process.env.PORT || 3000;
-
 /* middlewares */
 app.use(cors());
 app.use(express.json());
 
-/* ✅ SERVE UI (public folder) */
+/* serve public folder */
 app.use(express.static(path.join(__dirname, "public")));
 
-/* ✅ ROOT ROUTE */
+/* root */
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-/* ✅ GROQ CLIENT */
+/* groq */
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 });
 
-/* ✅ API ROUTE */
+/* api */
 app.post("/ask", async (req, res) => {
   try {
     const { question } = req.body;
@@ -52,7 +49,12 @@ app.post("/ask", async (req, res) => {
   }
 });
 
-/* ✅ START SERVER */
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
+/* LOCAL + VERCEL SUPPORT */
+if (require.main === module) {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+  });
+}
+
+module.exports = app;
