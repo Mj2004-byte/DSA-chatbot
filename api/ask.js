@@ -41,8 +41,9 @@ module.exports = async (req, res) => {
       });
     }
 
+    // Available Groq models: llama-3.3-70b-versatile, llama-3.1-8b-instant, mixtral-8x7b-32768, gemma2-9b-it
     const completion = await groq.chat.completions.create({
-      model: "llama-3.1-70b-versatile",
+      model: "llama-3.3-70b-versatile",
       messages: [
         { 
           role: "system", 
@@ -59,8 +60,20 @@ module.exports = async (req, res) => {
     });
   } catch (error) {
     console.error("Groq Error:", error);
+    
+    // Handle specific error types
+    let errorMessage = "Groq API error ❌";
+    
+    if (error.message && error.message.includes("model_decommissioned")) {
+      errorMessage = "The AI model has been updated. Please contact support or check Groq documentation for available models.";
+    } else if (error.message && error.message.includes("invalid_api_key")) {
+      errorMessage = "Invalid API key. Please check your GROQ_API_KEY in Vercel environment variables.";
+    } else if (error.message) {
+      errorMessage = `Error: ${error.message}`;
+    }
+    
     res.status(500).json({ 
-      answer: error.message || "Groq API error ❌. Please check your API key and try again." 
+      answer: errorMessage 
     });
   }
 };
