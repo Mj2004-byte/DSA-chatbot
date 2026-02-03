@@ -426,23 +426,23 @@
 
       try {
         const res = await fetch("/ask", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ question })
-});
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question })
+        });
 
-if (!res.ok) {
-  throw new Error("Server error");
-}
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({}));
+          throw new Error(errorData.answer || `Server error: ${res.status}`);
+        }
 
-const data = await res.json();
-loadingMsg.remove();
-addMessage(data.answer || "⚠️ No response from server.", "bot");
-
-
+        const data = await res.json();
+        loadingMsg.remove();
+        addMessage(data.answer || "⚠️ No response from server.", "bot");
       } catch (err) {
         loadingMsg.remove();
-        addMessage("❌ Server error. Try again.", "bot");
+        addMessage(err.message || "❌ Server error. Try again.", "bot");
+        console.error("Error:", err);
       }
     }
 
@@ -459,6 +459,7 @@ addMessage(data.answer || "⚠️ No response from server.", "bot");
     input.addEventListener("keydown", e => {
       if (e.key === "Enter") ask();
     });
+    
   </script>
 </body>
 </html>
