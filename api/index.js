@@ -2,7 +2,6 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const Groq = require("groq-sdk");
-require("dotenv").config();
 
 const app = express();
 
@@ -15,7 +14,7 @@ app.use(express.static(path.join(__dirname, "../public")));
 
 /* root route */
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../public", "index.html"));
+  res.sendFile(path.join(__dirname, "../public/index.html"));
 });
 
 /* groq client */
@@ -35,14 +34,8 @@ app.post("/ask", async (req, res) => {
     const completion = await groq.chat.completions.create({
       model: "openai/gpt-oss-20b",
       messages: [
-        {
-          role: "system",
-          content: "You are a Data Structures and Algorithms tutor."
-        },
-        {
-          role: "user",
-          content: question
-        }
+        { role: "system", content: "You are a Data Structures and Algorithms tutor." },
+        { role: "user", content: question }
       ]
     });
 
@@ -55,5 +48,5 @@ app.post("/ask", async (req, res) => {
   }
 });
 
-/* export for vercel */
+/* IMPORTANT: export app (NO listen) */
 module.exports = app;
