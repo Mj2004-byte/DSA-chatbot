@@ -1,4 +1,4 @@
- async function ask() {
+async function ask() {
   const input = document.getElementById("question");
   const chat = document.getElementById("chat");
 
@@ -8,14 +8,22 @@
   chat.innerHTML += `<div class="user">🧑 ${question}</div>`;
   input.value = "";
 
-  const res = await fetch("/ask", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ question })
-  });
+  try {
+    const res = await fetch("/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question })
+    });
 
-  const data = await res.json();
+    if (!res.ok) {
+      throw new Error("Server error");
+    }
 
-  chat.innerHTML += `<div class="bot">🤖 ${data.answer}</div>`;
+    const data = await res.json();
+    chat.innerHTML += `<div class="bot">🤖 ${data.answer}</div>`;
+  } catch (err) {
+    chat.innerHTML += `<div class="bot">❌ Server error. Try again.</div>`;
+  }
+
   chat.scrollTop = chat.scrollHeight;
 }

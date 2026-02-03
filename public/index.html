@@ -426,14 +426,20 @@
 
       try {
         const res = await fetch("/ask", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question })
-        });
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ question })
+});
 
-        const data = await res.json();
-        loadingMsg.remove();
-        addMessage(data.answer, "bot");
+if (!res.ok) {
+  throw new Error("Server error");
+}
+
+const data = await res.json();
+loadingMsg.remove();
+addMessage(data.answer || "⚠️ No response from server.", "bot");
+
+
       } catch (err) {
         loadingMsg.remove();
         addMessage("❌ Server error. Try again.", "bot");

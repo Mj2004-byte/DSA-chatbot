@@ -1,14 +1,10 @@
 {
   "name": "dsa-groq",
   "version": "1.0.0",
-  "main": "server.js",
+  "description": "DSA AI Chatbot using Groq",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node api/index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
     "cors": "^2.8.6",
     "dotenv": "^17.2.3",
@@ -16,3 +12,4 @@
     "groq-sdk": "^0.7.0"
   }
 }
+

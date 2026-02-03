@@ -1,4 +1,4 @@
- const express = require("express");
+const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const Groq = require("groq-sdk");
@@ -10,20 +10,20 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-/* ✅ serve public folder (FIXED PATH) */
+/* serve public folder */
 app.use(express.static(path.join(__dirname, "../public")));
 
-/* ✅ root route */
+/* root route */
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../public", "index.html"));
 });
 
-/* ✅ groq client */
+/* groq client */
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 });
 
-/* ✅ API route */
+/* api route */
 app.post("/ask", async (req, res) => {
   try {
     const { question } = req.body;
@@ -37,17 +37,17 @@ app.post("/ask", async (req, res) => {
       messages: [
         {
           role: "system",
-          content: "You are a Data Structures and Algorithms tutor.",
+          content: "You are a Data Structures and Algorithms tutor."
         },
         {
           role: "user",
-          content: question,
-        },
-      ],
+          content: question
+        }
+      ]
     });
 
     res.json({
-      answer: completion.choices[0].message.content,
+      answer: completion.choices[0].message.content
     });
   } catch (error) {
     console.error("Groq Error:", error);
@@ -55,5 +55,5 @@ app.post("/ask", async (req, res) => {
   }
 });
 
-/* ✅ IMPORTANT: DO NOT listen on a port (Vercel handles this) */
+/* export for vercel */
 module.exports = app;
